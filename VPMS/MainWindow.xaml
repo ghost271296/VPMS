@@ -50,7 +50,7 @@
             <StackPanel>
                 <!-- Pipeline steps -->
                 <TextBlock Text="PIPELINE" FontSize="10" FontWeight="Bold" Foreground="{StaticResource TextSecondaryBrush}"
-                           Margin="20,20,20,8" LetterSpacing="2"/>
+                           Margin="20,20,20,8"/>
 
                 <ItemsControl x:Name="NavItems">
                     <ItemsControl.Items>
@@ -117,7 +117,7 @@
                         Visibility="{Binding Session.Health, Converter={StaticResource BoolVis}}">
                     <StackPanel>
                         <TextBlock Text="HEALTH INDEX" FontSize="10" FontWeight="Bold"
-                                   Foreground="{StaticResource TextSecondaryBrush}" LetterSpacing="1" Margin="0,0,0,8"/>
+                                   Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,8"/>
                         <TextBlock FontSize="28" FontWeight="Bold" HorizontalAlignment="Center"
                                    Text="{Binding Session.Health.OverallScore, StringFormat='{}{0:F0}'}"
                                    Foreground="{Binding Session.Health.OverallScore, Converter={StaticResource HealthColor}}"/>

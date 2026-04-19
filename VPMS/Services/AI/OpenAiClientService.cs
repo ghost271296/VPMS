@@ -6,26 +6,43 @@ namespace VPMS.Services.AI;
 
 public class OpenAiClientService
 {
-    private readonly ChatClient _client;
     private readonly string _model;
     private readonly int _maxTokens;
     private readonly float _temperature;
+    private ChatClient? _client;
+    private string _apiKey = string.Empty;
 
     public OpenAiClientService(IConfiguration config)
     {
-        var apiKey = config["OpenAI:ApiKey"] ?? Environment.GetEnvironmentVariable("OPENAI_API_KEY") ?? string.Empty;
         _model = config["OpenAI:Model"] ?? "gpt-4o";
         _maxTokens = int.Parse(config["OpenAI:MaxTokens"] ?? "4096");
         _temperature = float.Parse(config["OpenAI:Temperature"] ?? "0.2");
 
-        var openAiClient = new OpenAIClient(apiKey);
-        _client = openAiClient.GetChatClient(_model);
+        // Load key from settings file, config, or environment — don't throw if empty
+        var key = SettingsService.LoadApiKey()
+                  ?? config["OpenAI:ApiKey"]
+                  ?? Environment.GetEnvironmentVariable("OPENAI_API_KEY")
+                  ?? string.Empty;
+
+        if (!string.IsNullOrWhiteSpace(key))
+            SetApiKey(key);
     }
 
-    public bool IsConfigured => !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("OPENAI_API_KEY") ?? string.Empty);
+    public bool IsConfigured => _client != null;
+
+    public void SetApiKey(string key)
+    {
+        if (string.IsNullOrWhiteSpace(key)) return;
+        _apiKey = key;
+        _client = new OpenAIClient(key).GetChatClient(_model);
+        SettingsService.SaveApiKey(key);
+    }
 
     public async Task<string> CompleteAsync(string systemPrompt, string userPrompt, CancellationToken ct = default)
     {
+        if (_client is null)
+            throw new InvalidOperationException("OpenAI API key is not configured. Go to Settings to enter your key.");
+
         var messages = new List<ChatMessage>
         {
             new SystemChatMessage(systemPrompt),
@@ -51,6 +68,10 @@ public class OpenAiClientService
             try
             {
                 return await CompleteAsync(systemPrompt, userPrompt, ct);
+            }
+            catch (InvalidOperationException)
+            {
+                throw;  // Don't retry missing-key errors
             }
             catch (Exception) when (attempt < maxRetries)
             {

@@ -53,6 +53,7 @@ public partial class App : Application
         services.AddSingleton<ActionsViewModel>();
         services.AddSingleton<PredictionViewModel>();
         services.AddSingleton<ReportViewModel>();
+        services.AddSingleton<SettingsViewModel>();
         services.AddSingleton<MainViewModel>();
 
         // Views
@@ -64,6 +65,7 @@ public partial class App : Application
         services.AddSingleton<ActionsView>();
         services.AddSingleton<PredictionView>();
         services.AddSingleton<ReportView>();
+        services.AddTransient<SettingsWindow>();
         services.AddSingleton<MainWindow>();
 
         Services = services.BuildServiceProvider();

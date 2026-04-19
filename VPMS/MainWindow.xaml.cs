@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Extensions.DependencyInjection;
 using VPMS.Models;
 using VPMS.ViewModels;
 using VPMS.Views;
@@ -83,6 +84,13 @@ public partial class MainWindow : Window
         };
 
         NavList.SelectedIndex = (int)_vm.CurrentStage;
+    }
+
+    private void OpenSettings_Click(object sender, RoutedEventArgs e)
+    {
+        var win = App.Services.GetRequiredService<SettingsWindow>();
+        win.Owner = this;
+        win.ShowDialog();
     }
 
     private void NavList_SelectionChanged(object sender, SelectionChangedEventArgs e)

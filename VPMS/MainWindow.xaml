@@ -37,6 +37,9 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <TextBlock Text="{Binding Session.UpsModel}" Foreground="#AAC8E8" FontSize="12" Margin="0,0,16,0"
                                Visibility="{Binding Session.UpsModel, Converter={StaticResource BoolVis}}"/>
+                    <Button Content="⚙ Settings" Click="OpenSettings_Click"
+                            Background="#2D5A8C" Foreground="White" BorderThickness="0"
+                            Padding="12,6" Cursor="Hand" FontSize="12" Margin="0,0,8,0"/>
                     <Button Content="New Session" Command="{Binding NewSessionCommand}"
                             Background="#2D5A8C" Foreground="White" BorderThickness="0"
                             Padding="12,6" Cursor="Hand" FontSize="12"/>

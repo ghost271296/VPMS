@@ -65,7 +65,7 @@
                                                TextWrapping="Wrap"/>
                                     <TextBlock Style="{StaticResource CaptionText}" Margin="0,4,0,0">
                                         <Run Text="Confidence: "/>
-                                        <Run Text="{Binding Confidence, Converter={StaticResource DblPct}}"
+                                        <Run Text="{Binding Confidence, Mode=OneWay, Converter={StaticResource DblPct}}"
                                              FontWeight="SemiBold"/>
                                     </TextBlock>
                                 </StackPanel>

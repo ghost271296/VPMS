@@ -102,7 +102,7 @@
                                 <StackPanel Margin="0,10,0,0">
                                     <TextBlock Style="{StaticResource CaptionText}">
                                         <Run Text="Est. remaining life: "/>
-                                        <Run Text="{Binding RemainingLifeEstimate}" FontWeight="SemiBold"/>
+                                        <Run Text="{Binding RemainingLifeEstimate, Mode=OneWay}" FontWeight="SemiBold"/>
                                     </TextBlock>
                                     <TextBlock Text="{Binding TrendDescription}"
                                                Style="{StaticResource CaptionText}" Margin="0,2,0,0"/>

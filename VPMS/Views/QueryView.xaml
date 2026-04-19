@@ -19,9 +19,9 @@
         <StackPanel Grid.Row="0" Margin="0,0,0,16">
             <TextBlock Text="Field Questions" Style="{StaticResource SectionHeader}"/>
             <TextBlock Style="{StaticResource CaptionText}">
-                <Run Text="{Binding AnsweredCount}"/>
+                <Run Text="{Binding AnsweredCount, Mode=OneWay}"/>
                 <Run Text=" of "/>
-                <Run Text="{Binding TotalQueries}"/>
+                <Run Text="{Binding TotalQueries, Mode=OneWay}"/>
                 <Run Text=" questions answered. These targeted questions refine the diagnosis."/>
             </TextBlock>
         </StackPanel>

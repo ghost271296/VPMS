@@ -4,7 +4,14 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
+using OxmlDocument = DocumentFormat.OpenXml.Wordprocessing.Document;
+using OxmlBody = DocumentFormat.OpenXml.Wordprocessing.Body;
+using OxmlParagraph = DocumentFormat.OpenXml.Wordprocessing.Paragraph;
+using OxmlRun = DocumentFormat.OpenXml.Wordprocessing.Run;
+using OxmlText = DocumentFormat.OpenXml.Wordprocessing.Text;
+using OxmlBold = DocumentFormat.OpenXml.Wordprocessing.Bold;
+using OxmlFontSize = DocumentFormat.OpenXml.Wordprocessing.FontSize;
+using OxmlRunProperties = DocumentFormat.OpenXml.Wordprocessing.RunProperties;
 using Newtonsoft.Json;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -277,8 +284,8 @@ public class ReportService
     {
         using var doc = WordprocessingDocument.Create(path, WordprocessingDocumentType.Document);
         var mainPart = doc.AddMainDocumentPart();
-        mainPart.Document = new Document();
-        var body = mainPart.Document.AppendChild(new Body());
+        mainPart.Document = new OxmlDocument();
+        var body = mainPart.Document.AppendChild(new OxmlBody());
 
         AddDocxParagraph(body, $"VPMS Diagnostic Report", bold: true, fontSize: 28);
         AddDocxParagraph(body, $"Site: {s.SiteId} | UPS: {s.UpsModel} ({s.UpsSerial})", fontSize: 20);
@@ -312,17 +319,17 @@ public class ReportService
         mainPart.Document.Save();
     }
 
-    private static void AddDocxParagraph(Body body, string text, bool bold = false, int fontSize = 20)
+    private static void AddDocxParagraph(OxmlBody body, string text, bool bold = false, int fontSize = 20)
     {
-        var para = body.AppendChild(new Paragraph());
-        var run = para.AppendChild(new Run());
+        var para = body.AppendChild(new OxmlParagraph());
+        var run = para.AppendChild(new OxmlRun());
         if (bold || fontSize > 20)
         {
-            run.RunProperties = new RunProperties();
-            if (bold) run.RunProperties.AppendChild(new Bold());
-            run.RunProperties.AppendChild(new FontSize { Val = fontSize.ToString() });
+            run.RunProperties = new OxmlRunProperties();
+            if (bold) run.RunProperties.AppendChild(new OxmlBold());
+            run.RunProperties.AppendChild(new OxmlFontSize { Val = fontSize.ToString() });
         }
-        run.AppendChild(new Text(text) { Space = SpaceProcessingModeValues.Preserve });
+        run.AppendChild(new OxmlText(text) { Space = SpaceProcessingModeValues.Preserve });
     }
 
     private static void BuildCsv(DiagnosticSession s, string path)

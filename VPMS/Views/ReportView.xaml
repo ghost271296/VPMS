@@ -1,0 +1,133 @@
+<UserControl x:Class="VPMS.Views.ReportView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:VPMS.Converters"
+             Background="{StaticResource BackgroundBrush}">
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolVis"/>
+    </UserControl.Resources>
+
+    <Grid Margin="32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock Text="Export Report" Style="{StaticResource SectionHeader}"/>
+            <TextBlock Text="Select sections, add notes, and export in your preferred format." Style="{StaticResource CaptionText}"/>
+        </StackPanel>
+
+        <!-- Section selection -->
+        <Border Grid.Row="1" Style="{StaticResource Card}" Margin="0,0,0,16">
+            <StackPanel>
+                <TextBlock Text="Sections to Include" Style="{StaticResource SubHeader}"/>
+                <UniformGrid Columns="4" Margin="0,8,0,0">
+                    <CheckBox Content="Executive Summary" IsChecked="{Binding IncludeExecutiveSummary}"
+                              Style="{StaticResource VpmsCheckBox}"/>
+                    <CheckBox Content="Health Dashboard" IsChecked="{Binding IncludeHealthDashboard}"
+                              Style="{StaticResource VpmsCheckBox}"/>
+                    <CheckBox Content="Detected Issues" IsChecked="{Binding IncludeIssues}"
+                              Style="{StaticResource VpmsCheckBox}"/>
+                    <CheckBox Content="Root Cause Analysis" IsChecked="{Binding IncludeRca}"
+                              Style="{StaticResource VpmsCheckBox}"/>
+                    <CheckBox Content="Fishbone Diagram" IsChecked="{Binding IncludeFishbone}"
+                              Style="{StaticResource VpmsCheckBox}"/>
+                    <CheckBox Content="Corrective Actions" IsChecked="{Binding IncludeActions}"
+                              Style="{StaticResource VpmsCheckBox}"/>
+                    <CheckBox Content="Predictive Risks" IsChecked="{Binding IncludePrediction}"
+                              Style="{StaticResource VpmsCheckBox}"/>
+                    <CheckBox Content="Engineering Appendix" IsChecked="{Binding IncludeAppendix}"
+                              Style="{StaticResource VpmsCheckBox}"/>
+                </UniformGrid>
+            </StackPanel>
+        </Border>
+
+        <!-- Notes -->
+        <Border Grid.Row="2" Style="{StaticResource Card}" Margin="0,0,0,16">
+            <StackPanel>
+                <TextBlock Text="Engineer Notes (appended to report)" Style="{StaticResource CaptionText}" Margin="0,0,0,4"/>
+                <TextBox Text="{Binding ReportNotes, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource InputBox}" MinHeight="80" TextWrapping="Wrap" AcceptsReturn="True"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Export buttons -->
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- PDF -->
+            <Border Grid.Column="0" Style="{StaticResource Card}">
+                <StackPanel HorizontalAlignment="Center">
+                    <TextBlock Text="📄" FontSize="40" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock Text="PDF Report" Style="{StaticResource SubHeader}" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Management &amp; site handover" Style="{StaticResource CaptionText}"
+                               HorizontalAlignment="Center" Margin="0,0,0,12"/>
+                    <Button Content="Export PDF" Command="{Binding ExportPdfCommand}"
+                            Style="{StaticResource PrimaryButton}" HorizontalAlignment="Center"
+                            IsEnabled="{Binding IsExporting, Converter={StaticResource BoolVis}, ConverterParameter=Invert}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- DOCX -->
+            <Border Grid.Column="2" Style="{StaticResource Card}">
+                <StackPanel HorizontalAlignment="Center">
+                    <TextBlock Text="📝" FontSize="40" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock Text="DOCX Report" Style="{StaticResource SubHeader}" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Editable site handover" Style="{StaticResource CaptionText}"
+                               HorizontalAlignment="Center" Margin="0,0,0,12"/>
+                    <Button Content="Export DOCX" Command="{Binding ExportDocxCommand}"
+                            Style="{StaticResource OutlineButton}" HorizontalAlignment="Center"
+                            IsEnabled="{Binding IsExporting, Converter={StaticResource BoolVis}, ConverterParameter=Invert}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- CSV -->
+            <Border Grid.Column="4" Style="{StaticResource Card}">
+                <StackPanel HorizontalAlignment="Center">
+                    <TextBlock Text="📊" FontSize="40" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock Text="CSV FeatureSet" Style="{StaticResource SubHeader}" HorizontalAlignment="Center"/>
+                    <TextBlock Text="R&amp;D / MATLAB / Python" Style="{StaticResource CaptionText}"
+                               HorizontalAlignment="Center" Margin="0,0,0,12"/>
+                    <Button Content="Export CSV" Command="{Binding ExportCsvCommand}"
+                            Style="{StaticResource OutlineButton}" HorizontalAlignment="Center"
+                            IsEnabled="{Binding IsExporting, Converter={StaticResource BoolVis}, ConverterParameter=Invert}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- JSON -->
+            <Border Grid.Column="6" Style="{StaticResource Card}">
+                <StackPanel HorizontalAlignment="Center">
+                    <TextBlock Text="🔧" FontSize="40" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock Text="JSON Artifacts" Style="{StaticResource SubHeader}" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Full pipeline / R&amp;D integration" Style="{StaticResource CaptionText}"
+                               HorizontalAlignment="Center" Margin="0,0,0,12"/>
+                    <Button Content="Export JSON" Command="{Binding ExportJsonCommand}"
+                            Style="{StaticResource OutlineButton}" HorizontalAlignment="Center"
+                            IsEnabled="{Binding IsExporting, Converter={StaticResource BoolVis}, ConverterParameter=Invert}"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- Status -->
+        <StackPanel Grid.Row="4" Margin="0,16,0,0" Orientation="Horizontal">
+            <TextBlock Text="{Binding ExportStatus}" Style="{StaticResource CaptionText}" VerticalAlignment="Center"/>
+            <Button Content="Open Folder" Command="{Binding OpenExportFolderCommand}"
+                    Style="{StaticResource OutlineButton}" Margin="12,0,0,0"
+                    Visibility="{Binding LastExportPath, Converter={StaticResource BoolVis}}"
+                    Padding="10,5"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

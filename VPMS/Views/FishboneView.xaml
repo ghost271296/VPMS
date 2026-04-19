@@ -1,0 +1,124 @@
+<UserControl x:Class="VPMS.Views.FishboneView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:VPMS.Converters"
+             xmlns:models="clr-namespace:VPMS.Models"
+             Background="{StaticResource BackgroundBrush}">
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolVis"/>
+        <converters:DoubleToPercentConverter x:Key="DblPct"/>
+    </UserControl.Resources>
+
+    <Grid Margin="32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header — Gate 2 -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                <Border Background="{StaticResource AccentBrush}" CornerRadius="4" Padding="8,3" Margin="0,0,10,0">
+                    <TextBlock Text="GATE 2 — Fishbone Confirmation" Foreground="White" FontWeight="Bold" FontSize="11"/>
+                </Border>
+                <TextBlock Text="Fishbone Diagram" Style="{StaticResource SectionHeader}" Margin="0"/>
+            </StackPanel>
+            <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource CaptionText}"/>
+        </StackPanel>
+
+        <!-- Fishbone diagram (structured list view) -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <!-- Effect (fish head) -->
+                <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="Effect (Problem Statement)" Style="{StaticResource CaptionText}" Margin="0,0,0,4"/>
+                        <TextBlock Text="{Binding Fishbone.Effect}" FontSize="18" FontWeight="Bold"
+                                   Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Causal branches grouped by category -->
+                <ItemsControl ItemsSource="{Binding Branches}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type models:FishboneNode}">
+                            <Border Style="{StaticResource Card}" Margin="0,0,0,8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Branch label -->
+                                    <Border Grid.Column="0" Background="{StaticResource PrimaryBrush}"
+                                            CornerRadius="5,0,0,5" Margin="-20,-20,-20,-20" Padding="12">
+                                        <TextBlock Text="{Binding Branch}" Foreground="White" FontWeight="Bold"
+                                                   FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                    </Border>
+
+                                    <!-- Cause details -->
+                                    <StackPanel Grid.Column="1" Margin="20,0,12,0">
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                            <Border Background="{StaticResource DangerBrush}" CornerRadius="4"
+                                                    Padding="6,2" Margin="0,0,8,0"
+                                                    Visibility="{Binding IsRootCause, Converter={StaticResource BoolVis}}">
+                                                <TextBlock Text="Root Cause" Foreground="White" FontSize="10" FontWeight="Bold"/>
+                                            </Border>
+                                            <TextBlock Text="{Binding Confidence, Converter={StaticResource DblPct}}"
+                                                       Style="{StaticResource CaptionText}" VerticalAlignment="Center"/>
+                                            <TextBlock Text=" confidence" Style="{StaticResource CaptionText}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding Label}" FontWeight="SemiBold" FontSize="14"/>
+                                        <TextBlock Text="{Binding Detail}" Style="{StaticResource CaptionText}" TextWrapping="Wrap"
+                                                   Visibility="{Binding Detail, Converter={StaticResource BoolVis}}"/>
+
+                                        <!-- Sub-causes -->
+                                        <ItemsControl ItemsSource="{Binding Children}" Margin="16,6,0,0">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal" Margin="0,2">
+                                                        <TextBlock Text="→ " Foreground="{StaticResource AccentBrush}" FontSize="11"/>
+                                                        <TextBlock Text="{Binding Label}" FontSize="12"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+
+                                    <!-- Remove -->
+                                    <Button Grid.Column="2" Content="✕" VerticalAlignment="Top"
+                                            Command="{Binding DataContext.RemoveNodeCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}"
+                                            Background="Transparent" BorderThickness="0"
+                                            Foreground="{StaticResource TextSecondaryBrush}" Cursor="Hand" Padding="4"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Notes and add node -->
+        <Border Grid.Row="2" Style="{StaticResource Card}" Margin="0,12,0,0">
+            <StackPanel>
+                <TextBlock Text="Engineer Notes" Style="{StaticResource CaptionText}" Margin="0,0,0,4"/>
+                <TextBox Text="{Binding EngineerNotes, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource InputBox}" MinHeight="60" TextWrapping="Wrap" AcceptsReturn="True"
+                         Margin="0,0,0,8"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Action bar -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,12,0,0">
+            <Button Content="✓ Confirm Fishbone &amp; Generate Actions" Command="{Binding ConfirmAndProceedCommand}"
+                    Style="{StaticResource AccentButton}"/>
+            <TextBlock Text="Generating corrective action plan…" Style="{StaticResource CaptionText}"
+                       Visibility="{Binding IsGeneratingActions, Converter={StaticResource BoolVis}}"
+                       VerticalAlignment="Center" Margin="12,0,0,0"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

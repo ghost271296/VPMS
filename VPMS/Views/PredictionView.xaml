@@ -1,0 +1,130 @@
+<UserControl x:Class="VPMS.Views.PredictionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:VPMS.Converters"
+             Background="{StaticResource BackgroundBrush}">
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolVis"/>
+        <converters:DoubleToPercentConverter x:Key="DblPct"/>
+        <converters:RiskToColorConverter x:Key="RiskColor"/>
+    </UserControl.Resources>
+
+    <Grid Margin="32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock Text="Predictive Risk Assessment" Style="{StaticResource SectionHeader}"/>
+            <TextBlock Text="30/60/90-day failure probability per subsystem" Style="{StaticResource CaptionText}"/>
+        </StackPanel>
+
+        <!-- Overall trend -->
+        <Border Grid.Row="1" Style="{StaticResource Card}" Margin="0,0,0,16">
+            <StackPanel>
+                <TextBlock Text="Overall Trend" Style="{StaticResource CaptionText}" Margin="0,0,0,4"/>
+                <TextBlock Text="{Binding OverallTrend}" FontSize="16" FontWeight="Bold"
+                           Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,6"/>
+                <TextBlock Text="{Binding Recommendation}" Style="{StaticResource BodyText}" TextWrapping="Wrap"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Subsystem risk cards -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding SubsystemRisks}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <!-- Subsystem name + risk level badge -->
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                    <TextBlock Text="{Binding Subsystem}" FontWeight="Bold" FontSize="15" Margin="0,0,12,0"/>
+                                    <Border Background="{Binding Risk30Day, Converter={StaticResource RiskColor}}"
+                                            CornerRadius="4" Padding="8,3">
+                                        <TextBlock Text="{Binding RiskLevel}" Foreground="White" FontSize="11" FontWeight="Bold"/>
+                                    </Border>
+                                </StackPanel>
+
+                                <!-- Risk bars (ProgressBar, Maximum=1) -->
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="70"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="55"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- 30-day -->
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="30 days"
+                                               Style="{StaticResource CaptionText}" VerticalAlignment="Center"/>
+                                    <ProgressBar Grid.Row="0" Grid.Column="1"
+                                                 Value="{Binding Risk30Day}" Maximum="1"
+                                                 Style="{StaticResource VpmsProgress}" Margin="0,4"
+                                                 Foreground="{Binding Risk30Day, Converter={StaticResource RiskColor}}"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="2"
+                                               Text="{Binding Risk30Day, Converter={StaticResource DblPct}}"
+                                               Style="{StaticResource CaptionText}"
+                                               HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+                                    <!-- 60-day -->
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="60 days"
+                                               Style="{StaticResource CaptionText}" VerticalAlignment="Center"/>
+                                    <ProgressBar Grid.Row="1" Grid.Column="1"
+                                                 Value="{Binding Risk60Day}" Maximum="1"
+                                                 Style="{StaticResource VpmsProgress}" Margin="0,4"
+                                                 Foreground="{Binding Risk60Day, Converter={StaticResource RiskColor}}"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="2"
+                                               Text="{Binding Risk60Day, Converter={StaticResource DblPct}}"
+                                               Style="{StaticResource CaptionText}"
+                                               HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+                                    <!-- 90-day -->
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="90 days"
+                                               Style="{StaticResource CaptionText}" VerticalAlignment="Center"/>
+                                    <ProgressBar Grid.Row="2" Grid.Column="1"
+                                                 Value="{Binding Risk90Day}" Maximum="1"
+                                                 Style="{StaticResource VpmsProgress}" Margin="0,4"
+                                                 Foreground="{Binding Risk90Day, Converter={StaticResource RiskColor}}"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="2"
+                                               Text="{Binding Risk90Day, Converter={StaticResource DblPct}}"
+                                               Style="{StaticResource CaptionText}"
+                                               HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                </Grid>
+
+                                <!-- Life estimate + trend -->
+                                <StackPanel Margin="0,10,0,0">
+                                    <TextBlock Style="{StaticResource CaptionText}">
+                                        <Run Text="Est. remaining life: "/>
+                                        <Run Text="{Binding RemainingLifeEstimate}" FontWeight="SemiBold"/>
+                                    </TextBlock>
+                                    <TextBlock Text="{Binding TrendDescription}"
+                                               Style="{StaticResource CaptionText}" Margin="0,2,0,0"/>
+                                    <ItemsControl ItemsSource="{Binding KeyDrivers}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" Margin="0,1">
+                                                    <TextBlock Text="• " Style="{StaticResource CaptionText}"/>
+                                                    <TextBlock Text="{Binding}" Style="{StaticResource CaptionText}"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <Button Grid.Row="3" Content="Generate Report  →" Command="{Binding ProceedCommand}"
+                Style="{StaticResource AccentButton}" HorizontalAlignment="Left" Margin="0,16,0,0"/>
+    </Grid>
+</UserControl>
